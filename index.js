@@ -5,7 +5,7 @@ app.use(express.json());
 let notes = [
   {
     id: 1,
-    content: "HTML is easy",
+    content: "Nota dentro del backend",
   },
   {
     id: 2,
