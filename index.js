@@ -1,30 +1,38 @@
+require("dotenv").config();
 const express = require("express");
+// const password = process.argv[2];
 const cors = require("cors");
+const mongoose = require("mongoose");
+const Note = require("./models/note");
 const app = express();
 app.use(express.json());
-let notes = [
-  {
-    id: 1,
-    content: "Nota dentro del backend",
-  },
-  {
-    id: 2,
-    content: "Browser can execute only Javascript",
-    important: false,
-  },
-  {
-    id: 3,
-    content: "GET and POST are the most important methods of HTTP protocol",
-    important: true,
-  },
-];
+const Note = require("./models/note");
+
+// let notes = [
+//   {
+//     id: 1,
+//     content: "Nota dentro del backend",
+//   },
+//   {
+//     id: 2,
+//     content: "Browser can execute only Javascript",
+//     important: false,
+//   },
+//   {
+//     id: 3,
+//     content: "GET and POST are the most important methods of HTTP protocol",
+//     important: true,
+//   },
+// ];
 app.use(cors());
 app.use(express.static("dist"));
 app.get("/", (request, response) => {
   response.send("<h1>Hello World</h1>");
 });
 app.get("/api/notes", (request, response) => {
-  response.json(notes);
+  Note.find({}).then((notes) => {
+    response.json(notes);
+  });
 });
 app.get("/api/notes/:id", (request, response) => {
   const id = Number(request.params.id);
