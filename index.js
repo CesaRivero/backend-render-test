@@ -35,42 +35,47 @@ app.get("/api/notes", (request, response) => {
   });
 });
 app.get("/api/notes/:id", (request, response) => {
-  const id = Number(request.params.id);
-  console.log(id);
-  const note = notes.find((note) => {
-    console.log(note.id, typeof note.id, id, typeof id, note.id === id);
-    return note.id === id;
+  Note.findById(request.params.id).then((note) => {
+    if (note) {
+      response.json(note);
+    } else {
+      response.statusMessage = "Nota no encontrada";
+      response.status(404).end();
+    }
   });
-  console.log(note);
-  if (note) {
-    response.json(note);
-  } else {
-    response.statusMessage = "Nota no encontrada";
-    response.status(404).end();
-  }
 });
 app.delete("/api/notes/:id", (request, response) => {
-  const id = Number(request.params.id);
-  notes = notes.filter((note) => note.id !== id);
-  response.status(204).end();
+  Note.findById(request.params.id)
+    .then((note) => {
+      if (note) {
+        Note.findByIdAndDelete(request.params.id).then((note) => {
+          response.status(204).end();
+        });
+      } else {
+        response.status(404).end();
+      }
+    })
+    .catch((error) => {
+      console.error(error);
+      response.status(400).send({ error: "malformatted id" });
+    });
 });
-const generateId = () => {
-  const maxId = notes.length > 0 ? Math.max(...notes.map((n) => n.id)) : 0;
-  return maxId + 1;
-};
+// const generateId = () => {
+//   const maxId = notes.length > 0 ? Math.max(...notes.map((n) => n.id)) : 0;
+//   return maxId + 1;
+// };
 app.post("/api/notes", (request, response) => {
   const body = request.body;
   if (!body.content) {
     return response.status(400).json({ error: "content missing" });
   }
-  const note = {
+  const note = new Note({
     content: body.content,
     important: Boolean(body.important) || false,
-    id: generateId(),
-  };
-  notes = notes.concat(note);
-  console.log(note);
-  response.json(note);
+  });
+  note.save().then((savedNote) => {
+    response.json(savedNote);
+  });
 });
 const PORT = process.env.PORT || 3001;
 app.listen(PORT);
