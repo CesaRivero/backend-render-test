@@ -1,8 +1,9 @@
 require("dotenv").config();
+console.log(`PORT desde env: ${process.env.PORT}`); // Para verificar que se carga
+console.log("MongoDB URI desde env:", process.env.MONGODB_URI);
+
 const express = require("express");
-// const password = process.argv[2];
 const cors = require("cors");
-const mongoose = require("mongoose");
 const Note = require("./models/note");
 const app = express();
 app.use(express.json());
